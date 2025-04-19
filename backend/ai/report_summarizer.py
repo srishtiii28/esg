@@ -14,12 +14,10 @@ class ReportSummarizer:
         except LookupError:
             nltk.download('punkt')
             
-        self.summarizer = pipeline("summarization",
-                                 model="facebook/bart-large-cnn")
-        self.key_points_extractor = pipeline("zero-shot-classification",
-                                           model="facebook/bart-large-mnli")
+        self.summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+        self.key_points_extractor = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
-    def summarize(self, text: str, max_length: int = 1000) -> Dict:
+    def summarize(self, text: str) -> Dict:
         """Generate a comprehensive summary of the ESG report"""
         results = {
             "executive_summary": self._generate_executive_summary(text),
@@ -56,11 +54,11 @@ class ReportSummarizer:
         """Extract key points from the text"""
         # Categories to classify statements into
         categories = [
-            "environmental initiative",
-            "social responsibility",
-            "governance practice",
-            "risk management",
-            "future commitment",
+            "environmental_initiative",
+            "social_responsibility",
+            "governance_practice",
+            "risk_management",
+            "future_commitment",
             "achievement",
             "challenge"
         ]
@@ -104,64 +102,35 @@ class ReportSummarizer:
 
     def _generate_recommendations(self, text: str) -> List[str]:
         """Generate recommendations based on the report content"""
-        categories = [
-            "areas for improvement",
-            "risk factors",
-            "opportunities",
-            "compliance requirements"
-        ]
-        
-        result = self.key_points_extractor(text, categories, multi_label=True)
+        # Simple recommendation generation based on key points
+        key_points = self._extract_key_points(text)
         recommendations = []
         
-        for category, score in zip(result['labels'], result['scores']):
-            if score > 0.5:
-                if category == "areas for improvement":
-                    recommendations.append("Consider strengthening ESG initiatives in identified weak areas")
-                elif category == "risk factors":
-                    recommendations.append("Develop mitigation strategies for identified ESG risks")
-                elif category == "opportunities":
-                    recommendations.append("Explore potential opportunities for ESG improvement")
-                elif category == "compliance requirements":
-                    recommendations.append("Ensure continued compliance with ESG regulations")
+        for point in key_points:
+            if "challenge" in point["category"] or "risk" in point["category"]:
+                recommendations.append(
+                    f"Recommendation: Address {point['point']}"
+                )
         
-        return recommendations
+        return recommendations[:5]
 
     def _split_text(self, text: str, max_length: int = 1024) -> List[str]:
-        """Split text into chunks that fit within model's max token limit"""
-        sentences = sent_tokenize(text)
+        """Split text into chunks for processing"""
+        words = text.split()
         chunks = []
         current_chunk = []
         current_length = 0
         
-        for sentence in sentences:
-            sentence_length = len(sentence.split())
-            if current_length + sentence_length <= max_length:
-                current_chunk.append(sentence)
-                current_length += sentence_length
+        for word in words:
+            if current_length + len(word) + 1 <= max_length:
+                current_chunk.append(word)
+                current_length += len(word) + 1
             else:
                 chunks.append(" ".join(current_chunk))
-                current_chunk = [sentence]
-                current_length = sentence_length
+                current_chunk = [word]
+                current_length = len(word) + 1
         
         if current_chunk:
             chunks.append(" ".join(current_chunk))
         
         return chunks
-
-    def _extract_section(self, text: str, section_type: str) -> str:
-        """Extract content related to a specific section type"""
-        sentences = sent_tokenize(text)
-        section_content = []
-        
-        for sentence in sentences:
-            result = self.key_points_extractor(
-                sentence,
-                [f"{section_type} related", "unrelated"],
-                multi_label=False
-            )
-            
-            if result['labels'][0] == f"{section_type} related" and result['scores'][0] > 0.6:
-                section_content.append(sentence)
-        
-        return " ".join(section_content)

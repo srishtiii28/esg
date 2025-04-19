@@ -1,7 +1,7 @@
 """Document processing module for OCR and text extraction"""
 
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List
 from PIL import Image
 import pytesseract
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
@@ -26,8 +26,8 @@ class DocumentProcessor:
                 page = doc[page_num]
                 text = page.get_text()
                 
-                # If no text is extracted, perform OCR
-                if not text.strip():
+                # If no text is extracted or text is too short, perform OCR
+                if not text.strip() or len(text) < 100:
                     pix = page.get_pixmap()
                     img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                     text = self._perform_ocr(img)
@@ -47,25 +47,23 @@ class DocumentProcessor:
         return generated_text
 
     def extract_text(self, file_path: str) -> Dict[int, str]:
-        """Main method to extract text from a document"""
+        """Extract text from a PDF file"""
         try:
-            file_ext = os.path.splitext(file_path)[1].lower()
+            doc = fitz.open(file_path)
+            results = {}
             
-            if file_ext == '.pdf':
-                return self.process_pdf(file_path)
-            elif file_ext in ['.png', '.jpg', '.jpeg']:
-                img = Image.open(file_path)
-                text = self._perform_ocr(img)
-                return {0: text}
-            elif file_ext in ['.txt', '.doc', '.docx']:
-                # Read text file directly
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                    # Clean up the text by removing extra whitespace and newlines
-                    text = ' '.join(text.split())
-                return {0: text}
-            else:
-                raise ValueError(f"Unsupported file format: {file_ext}")
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                text = page.get_text()
+                if text.strip():
+                    results[page_num] = text
+                else:
+                    pix = page.get_pixmap()
+                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    text = self._perform_ocr(img)
+                    results[page_num] = text
+            
+            return results
         except Exception as e:
             print(f"Error extracting text: {str(e)}")
             raise ValueError(f"Failed to extract text from file: {str(e)}")

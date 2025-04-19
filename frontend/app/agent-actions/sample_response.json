@@ -1,0 +1,121 @@
+[
+  {
+    "_id": "68002ac6cf9f04df3181ea2a",
+    "timestamp": "2025-04-16T22:10:14.281000",
+    "action": "Validation Layer Declined",
+    "input": {
+      "token": "ALT",
+      "texts": [
+        "Man ALT and DEAL are going to shit",
+        "dude we gotta sell ALT its such a fake token",
+        "Yeah let's sell ALT",
+        "ikrr mostly ALT"
+      ],
+      "sentiment": "negative",
+      "confidence": 0.8
+    },
+    "output": {
+      "reason": "Token is not valid",
+      "sentiment": "positive",
+      "validity": false
+    },
+    "user_id": "0xe34b40f38217f9Dc8c3534735f7f41B2cDA73A75"
+  },
+  {
+    "_id": "68002ac6cf9f04df3181ea29",
+    "timestamp": "2025-04-16T22:10:14.215000",
+    "action": "Validation Layer",
+    "input": {
+      "sentiment": "positive",
+      "expected_sentiment": "negative"
+    },
+    "output": "Sentiment does not match",
+    "user_id": "0xe34b40f38217f9Dc8c3534735f7f41B2cDA73A75"
+  },
+  {
+    "_id": "68002abccf9f04df3181ea26",
+    "timestamp": "2025-04-16T22:10:04.754000",
+    "action": "Check Token Balance [Alpha is negative so we need to sell the token]",
+    "input": {
+      "token": "ALT",
+      "texts": [
+        "Man ALT and DEAL are going to shit",
+        "dude we gotta sell ALT its such a fake token",
+        "Yeah let's sell ALT",
+        "ikrr mostly ALT"
+      ],
+      "sentiment": "negative",
+      "confidence": 0.8
+    },
+    "output": "Checking token balance",
+    "user_id": "0xe34b40f38217f9Dc8c3534735f7f41B2cDA73A75"
+  },
+  {
+    "_id": "68002c8fcf9f04df3181ea3c",
+    "timestamp": "2025-04-16T22:17:51.221000",
+    "action": "Get PNL Potential",
+    "input": {
+      "token": {
+        "token": "DEAL",
+        "texts": [
+          "DEAL sell time",
+          "DEAL going to crash",
+          "he said DEAL would go to the moon but its going to hell",
+          "chee DEAL",
+          "Exactly DEAL was such a shit token"
+        ],
+        "sentiment": "negative",
+        "confidence": 1
+      },
+      "historical_data": {
+        "prices": [
+          59.23135358796735, 57.39869665534301, 56.890050143275836,
+          56.38680357939276, 55.603238113545295, 54.69275564783245,
+          53.39705250429416, 52.765699282871616, 50.968477481251156,
+          50.22974695442798
+        ],
+        "market_caps": [
+          20028110.369626593, 19277870.73171114, 18853494.611903194,
+          18510971.963774417, 18096100.38283725, 17540541.11503077,
+          16952542.141178392, 16514011.850155452, 15764863.546636129,
+          15377784.356455818
+        ],
+        "total_volumes": [
+          338133.5923698228, 335859.03260952607, 331402.3201670811,
+          328285.5347122296, 325450.47728846077, 320710.5019168279,
+          317480.85982489533, 312968.6913012465, 309306.15010886407,
+          306148.95134565665
+        ]
+      }
+    },
+    "output": -12.806725090358983,
+    "user_id": "0xe34b40f38217f9Dc8c3534735f7f41B2cDA73A75"
+  },
+  {
+    "_id": "68002c99cf9f04df3181ea3d",
+    "timestamp": "2025-04-16T22:18:01.007000",
+    "action": "Sell Token DEAL",
+    "input": {
+      "token": "DEAL",
+      "texts": [
+        "DEAL sell time",
+        "DEAL going to crash",
+        "he said DEAL would go to the moon but its going to hell",
+        "chee DEAL",
+        "Exactly DEAL was such a shit token"
+      ],
+      "sentiment": "negative",
+      "confidence": 1
+    },
+    "output": {
+      "approve_transaction_hash": "887e1bd26fedf9185a303f704381f48ffb2611c363fe7bcb23d312b46adf6547",
+      "approve_status": 1,
+      "approve_gas_used": 7330200,
+      "sell_transaction_hash": "365213262d97a251bf9a57094997e978799ad91be3a586c749683b485adb2588",
+      "sell_status": 1,
+      "sell_gas_used": 5980697,
+      "token_ticker": "DEAL"
+    },
+    "user_id": "0xe34b40f38217f9Dc8c3534735f7f41B2cDA73A75"
+  }
+]
